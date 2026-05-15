@@ -1,17 +1,38 @@
 ---
-import '../styles/global.css';
+/**
+ * Home page — placeholder shell until Step 7 (section components)
+ * and Step 8 (page assembly) are built. Confirms BaseLayout + token
+ * pipeline is wired correctly end-to-end.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import Heading from '../components/ui/Heading.astro';
+import Text from '../components/ui/Text.astro';
+import Button from '../components/ui/Button.astro';
+import Link from '../components/ui/Link.astro';
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Nova Dental Studio — Premium Cosmetic & Family Dental</title>
-  </head>
-  <body>
-    <h1 class="text-display-2xl font-bold text-fg">Nova Dental Studio</h1>
-    <p class="text-muted">Setup verified — build system active.</p>
-  </body>
-</html>
+<BaseLayout
+  title="Premium Cosmetic & Family Dental"
+  description="Nova Dental Studio — premium cosmetic and family dental care. Gentle, modern, evidence-based. Trusted by families for 15+ years."
+>
+  <Section tone="light" padding="lg" id="main">
+    <Container class="flex flex-col items-start gap-8 max-w-3xl">
+      <Text size="sm" tone="muted" weight="medium" class="uppercase tracking-widest">
+        Coming soon
+      </Text>
+      <Heading as="h1" size="display-xl">
+        Nova Dental Studio
+      </Heading>
+      <Text size="lg" tone="muted">
+        Marketing site under construction. Design system live. Audit the primitives at
+        <Link href="/kitchen-sink"> /kitchen-sink</Link>.
+      </Text>
+      <div class="flex flex-wrap gap-4">
+        <Button variant="primary" size="lg" href="/kitchen-sink">View kitchen sink</Button>
+        <Button variant="ghost" size="lg" href="/llms.txt">llms.txt</Button>
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>

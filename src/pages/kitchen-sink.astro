@@ -1,0 +1,486 @@
+---
+/**
+ * /kitchen-sink — visual audit reference.
+ *
+ * Shows every primitive in every state. Used to verify the design
+ * system before building marketing sections. Excluded from indexing.
+ *
+ * Sections:
+ *   1. Typography (display + body sizes, all tones)
+ *   2. Buttons (4 variants × 3 sizes × all states)
+ *   3. Links (default + hover demo)
+ *   4. Cards (4 variants, interactive + static)
+ *   5. Sections (3 tones)
+ *   6. Container demo
+ *   7. Image (with skeleton placeholder)
+ *   8. Motion demos (FadeIn + Marquee)
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import Heading from '../components/ui/Heading.astro';
+import Text from '../components/ui/Text.astro';
+import Button from '../components/ui/Button.astro';
+import Link from '../components/ui/Link.astro';
+import Card from '../components/ui/Card.astro';
+import Image from '../components/ui/Image.astro';
+import Marquee from '../components/motion/Marquee.astro';
+import { FadeIn } from '../components/motion/FadeIn';
+
+const buttonVariants = ['primary', 'secondary', 'ghost', 'link'] as const;
+const buttonSizes = ['sm', 'md', 'lg'] as const;
+
+const serviceTags = [
+  'General Dentistry',
+  'Teeth Whitening',
+  'Cosmetic',
+  'Implants',
+  'Root Canal',
+  'Sealants',
+  'Family Dentistry',
+  'Emergency Care',
+];
+
+const displaySizes = [
+  { size: 'display-2xl', label: 'display-2xl — hero display' },
+  { size: 'display-xl', label: 'display-xl — H1' },
+  { size: 'display-lg', label: 'display-lg — H2' },
+  { size: 'display-md', label: 'display-md — section heading' },
+  { size: '4xl', label: '4xl — H2 mobile' },
+  { size: '3xl', label: '3xl — H3' },
+  { size: '2xl', label: '2xl — H4' },
+  { size: 'xl', label: 'xl — small heading' },
+] as const;
+
+const bodySizes = ['lg', 'base', 'sm', 'xs'] as const;
+const bodyTones = ['default', 'muted', 'accent'] as const;
+---
+
+<BaseLayout
+  title="Kitchen Sink — Primitive Audit"
+  description="Internal visual audit reference showing every UI primitive in every state."
+  noindex
+  includeDefaultSchemas={false}
+>
+  {/* ============================================================
+     PAGE HEADER
+     ============================================================ */}
+  <Section tone="light" padding="sm" id="main" as="header">
+    <Container>
+      <Text size="sm" tone="muted" weight="medium" class="uppercase tracking-widest">
+        Internal · Design system audit
+      </Text>
+      <Heading as="h1" size="display-xl" class="mt-4">
+        Kitchen Sink
+      </Heading>
+      <Text size="lg" tone="muted" class="mt-6 max-w-2xl">
+        Every primitive, every variant, every state. This page is the visual contract
+        between CLAUDE.md and the build. If something here looks wrong, the primitive
+        is wrong — not the page.
+      </Text>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     1. TYPOGRAPHY
+     ============================================================ */}
+  <Section tone="subtle" padding="default" aria-labelledby="sec-typography">
+    <Container>
+      <Heading id="sec-typography" as="h2" size="display-md" tone="accent" class="mb-12">
+        01 · Typography
+      </Heading>
+
+      <div class="space-y-10">
+        <div class="space-y-6">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">Display scale</Text>
+          {displaySizes.map(({ size, label }) => (
+            <div class="grid grid-cols-1 md:grid-cols-[14rem_1fr] gap-2 md:gap-6 md:items-baseline">
+              <Text size="sm" tone="muted" class="font-mono">{label}</Text>
+              <Heading as="h3" size={size}>The quick brown fox</Heading>
+            </div>
+          ))}
+        </div>
+
+        <div class="space-y-6 border-t border-border pt-10">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">Body sizes × tones</Text>
+          {bodySizes.map((s) => (
+            <div class="space-y-2">
+              <Text size="xs" tone="muted" class="font-mono">size="{s}"</Text>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {bodyTones.map((t) => (
+                  <Text size={s} tone={t}>
+                    {t} — Modern dentistry, kept gentle. We care for whole families across the city.
+                  </Text>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="space-y-4 border-t border-border pt-10">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">Weights</Text>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Text weight="regular">Regular 400 — body baseline.</Text>
+            <Text weight="medium">Medium 500 — UI labels.</Text>
+            <Text weight="semibold">Semibold 600 — emphasis.</Text>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     2. BUTTONS
+     ============================================================ */}
+  <Section tone="light" padding="default" aria-labelledby="sec-buttons">
+    <Container>
+      <Heading id="sec-buttons" as="h2" size="display-md" tone="accent" class="mb-3">
+        02 · Buttons
+      </Heading>
+      <Text size="base" tone="muted" class="mb-12 max-w-2xl">
+        Every variant × every size. Hover lifts -translate-y-0.5 with shadow grow.
+        Focus-visible shows the accent ring. Disabled drops opacity and removes pointer events.
+        Loading shows a spinner and sets aria-busy.
+      </Text>
+
+      <div class="space-y-12">
+        {buttonVariants.map((variant) => (
+          <div class="space-y-6">
+            <Text size="sm" tone="muted" weight="medium" class="uppercase tracking-widest font-mono">
+              variant="{variant}"
+            </Text>
+
+            <div class="space-y-4">
+              <Text size="xs" tone="muted">Sizes</Text>
+              <div class="flex flex-wrap items-center gap-4">
+                {buttonSizes.map((size) => (
+                  <Button variant={variant} size={size}>
+                    {variant === 'link' ? 'Read the case study' : 'Book consultation'}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <Text size="xs" tone="muted">States (size="md")</Text>
+              <div class="flex flex-wrap items-center gap-4">
+                <Button variant={variant} size="md">Default</Button>
+                <Button variant={variant} size="md" disabled>Disabled</Button>
+                <Button variant={variant} size="md" loading>Loading…</Button>
+                <Button variant={variant} size="md" href="#focus">As anchor</Button>
+                <Button variant={variant} size="md" fullWidth class="md:max-w-xs">Full width</Button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     3. LINKS
+     ============================================================ */}
+  <Section tone="subtle" padding="default" aria-labelledby="sec-links">
+    <Container>
+      <Heading id="sec-links" as="h2" size="display-md" tone="accent" class="mb-3">
+        03 · Links
+      </Heading>
+      <Text size="base" tone="muted" class="mb-10 max-w-2xl">
+        Default text-fg. Hover transitions to text-accent over 150ms ease-out-quint.
+        Underline offset 4px, decoration 1px. External links auto-rel/target.
+      </Text>
+
+      <div class="space-y-6">
+        <Text size="lg">
+          This is an inline <Link href="/services">internal link</Link> within
+          a sentence. Compare it to an
+          <Link href="https://example.com"> external link</Link> which carries
+          rel="noopener noreferrer" and target="_blank" automatically.
+        </Text>
+
+        <Text size="base" tone="muted">
+          Even in muted body copy, a <Link href="/about">link</Link> stays
+          anchored to text-fg so hover behavior is identical.
+        </Text>
+
+        <div>
+          <Text size="xs" tone="muted" class="uppercase tracking-widest mb-3">Hover preview</Text>
+          <Link href="#" class="text-accent">Hover state (forced via class)</Link>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     4. CARDS
+     ============================================================ */}
+  <Section tone="light" padding="default" aria-labelledby="sec-cards">
+    <Container>
+      <Heading id="sec-cards" as="h2" size="display-md" tone="accent" class="mb-3">
+        04 · Cards
+      </Heading>
+      <Text size="base" tone="muted" class="mb-12 max-w-2xl">
+        Four variants. Interactive cards lift -translate-y-1 with shadow grow over
+        300ms. Non-interactive cards stay still.
+      </Text>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card variant="default">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest mb-3">default · static</Text>
+          <Heading as="h3" size="xl" class="mb-2">A quiet card</Heading>
+          <Text size="sm" tone="muted">Plain surface. No lift, no shadow.</Text>
+        </Card>
+
+        <Card variant="default" interactive>
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest mb-3">default · interactive</Text>
+          <Heading as="h3" size="xl" class="mb-2">Hover me</Heading>
+          <Text size="sm" tone="muted">Lifts and gains a softer shadow.</Text>
+        </Card>
+
+        <Card variant="feature" interactive href="#">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest mb-3">feature · linked</Text>
+          <Heading as="h3" size="2xl" class="mb-2">Feature</Heading>
+          <Text size="sm" tone="muted">Bigger padding, larger radius. Rendered as an anchor.</Text>
+        </Card>
+
+        <Card variant="service" interactive>
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">service</Text>
+          <Heading as="h3" size="xl">General Dentistry</Heading>
+          <Text size="sm" tone="muted">
+            Routine exams, cleanings, fillings — the steady foundation.
+          </Text>
+          <Link href="/services" class="mt-auto self-start">Learn more →</Link>
+        </Card>
+
+        <Card variant="image-top" interactive href="#" class="lg:col-span-2">
+          <Image
+            src="https://picsum.photos/seed/dental1/1200/700"
+            alt="Modern dental treatment room"
+            width={1200}
+            height={700}
+            rounded="none"
+            aspect="aspect-[12/7]"
+          />
+          <div class="p-6 md:p-8 space-y-3">
+            <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">image-top</Text>
+            <Heading as="h3" size="2xl">Cosmetic Smile Design</Heading>
+            <Text size="sm" tone="muted">
+              Image rendered through the Image primitive with skeleton background
+              while loading. Card lifts on hover.
+            </Text>
+          </div>
+        </Card>
+
+        <Card variant="image-top" class="lg:col-span-2">
+          <Image
+            src="https://picsum.photos/seed/dental2/1200/700"
+            alt="Dental hygienist with patient"
+            width={1200}
+            height={700}
+            rounded="none"
+            aspect="aspect-[12/7]"
+          />
+          <div class="p-6 md:p-8 space-y-3">
+            <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">image-top · static</Text>
+            <Heading as="h3" size="2xl">Family Care</Heading>
+            <Text size="sm" tone="muted">No lift — this card is informational only.</Text>
+          </div>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     5. SECTIONS — three tones inline
+     ============================================================ */}
+  <Section tone="subtle" padding="sm" aria-labelledby="sec-sections-intro">
+    <Container>
+      <Heading id="sec-sections-intro" as="h2" size="display-md" tone="accent" class="mb-3">
+        05 · Sections
+      </Heading>
+      <Text size="base" tone="muted" class="max-w-2xl">
+        Three tones: light · subtle · dark. The three blocks below demonstrate
+        each tone with default padding.
+      </Text>
+    </Container>
+  </Section>
+
+  <Section tone="light" padding="default" aria-label="Section tone: light">
+    <Container>
+      <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest mb-3 font-mono">tone="light"</Text>
+      <Heading as="h3" size="2xl" class="mb-2">Warm off-white surface</Heading>
+      <Text size="base" tone="muted">The default page tone. Patients land here.</Text>
+    </Container>
+  </Section>
+
+  <Section tone="subtle" padding="default" aria-label="Section tone: subtle">
+    <Container>
+      <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest mb-3 font-mono">tone="subtle"</Text>
+      <Heading as="h3" size="2xl" class="mb-2">Subtle warm gray</Heading>
+      <Text size="base" tone="muted">Used to differentiate adjacent sections without raising contrast.</Text>
+    </Container>
+  </Section>
+
+  <Section tone="dark" padding="default" aria-label="Section tone: dark">
+    <Container>
+      <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest mb-3 font-mono">tone="dark"</Text>
+      <Heading as="h3" size="2xl" tone="inherit" class="mb-2 text-dark-fg">Deep navy</Heading>
+      <Text size="base" class="text-dark-fg/70">
+        Reserved for one or two strategic sections — case stories, conversion break.
+      </Text>
+      <div class="mt-6 flex gap-4">
+        <Button variant="primary" size="md">Primary on dark</Button>
+        <Button variant="ghost" size="md" class="text-dark-fg border-dark-fg/30 hover:border-dark-fg hover:bg-dark-fg/10">
+          Ghost on dark
+        </Button>
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     6. CONTAINER
+     ============================================================ */}
+  <Section tone="subtle" padding="default" aria-labelledby="sec-container">
+    <Container>
+      <Heading id="sec-container" as="h2" size="display-md" tone="accent" class="mb-3">
+        06 · Container
+      </Heading>
+      <Text size="base" tone="muted" class="mb-8 max-w-2xl">
+        Single source of truth for horizontal layout: max-width 1280px,
+        responsive padding px-6 → px-8 → px-12.
+      </Text>
+    </Container>
+
+    <Container class="border border-dashed border-border rounded-lg py-8">
+      <Text size="sm" tone="muted" class="text-center font-mono">
+        This dashed box marks the Container bounds at the current viewport.
+      </Text>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     7. IMAGE
+     ============================================================ */}
+  <Section tone="light" padding="default" aria-labelledby="sec-image">
+    <Container>
+      <Heading id="sec-image" as="h2" size="display-md" tone="accent" class="mb-3">
+        07 · Image
+      </Heading>
+      <Text size="base" tone="muted" class="mb-12 max-w-2xl">
+        Every image lives inside a bg-subtle skeleton wrapper. The image fades in
+        over 600ms (animate-image-fadein). Rounded by default to rounded-xl.
+      </Text>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="space-y-3">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">rounded="xl" (default)</Text>
+          <Image
+            src="https://picsum.photos/seed/dental3/800/600"
+            alt="Sample"
+            width={800}
+            height={600}
+            aspect="aspect-[4/3]"
+          />
+        </div>
+
+        <div class="space-y-3">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">rounded="2xl"</Text>
+          <Image
+            src="https://picsum.photos/seed/dental4/800/600"
+            alt="Sample"
+            width={800}
+            height={600}
+            rounded="2xl"
+            aspect="aspect-[4/3]"
+          />
+        </div>
+
+        <div class="space-y-3">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">rounded="full" (portrait)</Text>
+          <Image
+            src="https://picsum.photos/seed/portrait/600/600"
+            alt="Sample portrait"
+            width={600}
+            height={600}
+            rounded="full"
+            aspect="aspect-square"
+          />
+        </div>
+
+        <div class="space-y-3">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">skeleton (no src)</Text>
+          <div class="relative overflow-hidden bg-subtle rounded-xl aspect-[4/3]" aria-label="Skeleton placeholder">
+            <Text size="sm" tone="muted" class="absolute inset-0 flex items-center justify-center font-mono">
+              bg-subtle placeholder
+            </Text>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     8. MOTION
+     ============================================================ */}
+  <Section tone="subtle" padding="default" aria-labelledby="sec-motion">
+    <Container>
+      <Heading id="sec-motion" as="h2" size="display-md" tone="accent" class="mb-3">
+        08 · Motion
+      </Heading>
+      <Text size="base" tone="muted" class="mb-12 max-w-2xl">
+        FadeIn reveals on scroll with y=24, duration=0.8s, ease-out-expo,
+        once: true. Marquee runs a 30s linear loop and pauses on hover.
+        Both honor prefers-reduced-motion.
+      </Text>
+
+      <div class="space-y-16">
+        <div class="space-y-6">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">FadeIn — scroll to reveal</Text>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FadeIn client:load>
+              <Card variant="default">
+                <Heading as="h4" size="xl" class="mb-2">No delay</Heading>
+                <Text size="sm" tone="muted">Reveals as it enters the viewport.</Text>
+              </Card>
+            </FadeIn>
+            <FadeIn client:load delay={0.15}>
+              <Card variant="default">
+                <Heading as="h4" size="xl" class="mb-2">+150ms delay</Heading>
+                <Text size="sm" tone="muted">Staggered with its neighbors.</Text>
+              </Card>
+            </FadeIn>
+            <FadeIn client:load delay={0.3}>
+              <Card variant="default">
+                <Heading as="h4" size="xl" class="mb-2">+300ms delay</Heading>
+                <Text size="sm" tone="muted">Slowest of the three.</Text>
+              </Card>
+            </FadeIn>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">Marquee — hover to pause</Text>
+          <Marquee ariaLabel="Sample service tags">
+            {serviceTags.map((tag) => (
+              <span class="inline-flex items-center rounded-full bg-bg text-fg px-5 py-2 text-sm font-medium border border-border whitespace-nowrap">
+                {tag}
+              </span>
+            ))}
+          </Marquee>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     FOOTER LINK BACK
+     ============================================================ */}
+  <Section tone="dark" padding="sm" aria-label="Kitchen sink footer">
+    <Container class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+      <Text size="sm" class="text-dark-fg/70">
+        End of audit · noindex · internal use only
+      </Text>
+      <Button variant="primary" size="md" href="/">Back to home</Button>
+    </Container>
+  </Section>
+</BaseLayout>

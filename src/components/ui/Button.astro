@@ -1,0 +1,152 @@
+---
+/**
+ * <Button> — primary interactive primitive.
+ *
+ * Variants: primary | secondary | ghost | link
+ * Sizes:    sm | md | lg
+ * States:   default · hover · focus-visible · active · disabled · loading
+ *
+ * Enforces interaction laws §6: hover transform, focus-visible ring,
+ * shadow-glow on primary, disabled affordance, aria-busy on loading.
+ *
+ * Renders <a> when `href` is provided, otherwise <button>.
+ */
+import { cn } from '../../lib/cn';
+
+type Variant = 'primary' | 'secondary' | 'ghost' | 'link';
+type Size = 'sm' | 'md' | 'lg';
+
+interface Props {
+  variant?: Variant;
+  size?: Size;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  loading?: boolean;
+  fullWidth?: boolean;
+  class?: string;
+  id?: string;
+  'aria-label'?: string;
+  rel?: string;
+  target?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  disabled = false,
+  loading = false,
+  fullWidth = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const base = [
+  'relative inline-flex items-center justify-center gap-2',
+  'font-medium whitespace-nowrap select-none',
+  'transition-[transform,box-shadow,background-color,color,border-color] duration-fast ease-out-quint',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+  'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
+  'aria-busy:cursor-wait',
+].join(' ');
+
+const variants: Record<Variant, string> = {
+  primary: cn(
+    'rounded-full bg-accent text-accent-fg shadow-glow',
+    'hover:-translate-y-0.5 hover:shadow-lg',
+    'active:translate-y-0 active:shadow-glow',
+  ),
+  secondary: cn(
+    'rounded-full bg-subtle text-fg',
+    'hover:-translate-y-0.5 hover:bg-border hover:shadow-md',
+    'active:translate-y-0 active:shadow-sm',
+  ),
+  ghost: cn(
+    'rounded-full bg-transparent text-fg border border-border',
+    'hover:-translate-y-0.5 hover:border-fg hover:bg-subtle',
+    'active:translate-y-0',
+  ),
+  link: cn(
+    'rounded-sm bg-transparent text-fg px-0 py-0',
+    'underline-offset-4 decoration-1',
+    'hover:text-accent hover:underline',
+  ),
+};
+
+const sizes: Record<Size, string> = {
+  sm: 'text-sm px-4 py-2',
+  md: 'text-base px-6 py-3',
+  lg: 'text-lg px-8 py-4',
+};
+
+const linkSizes: Record<Size, string> = {
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg',
+};
+
+const sizeClasses = variant === 'link' ? linkSizes[size] : sizes[size];
+
+const classes = cn(
+  base,
+  variants[variant],
+  sizeClasses,
+  fullWidth && 'w-full',
+  className,
+);
+
+const isAnchor = !!href;
+const isDisabled = disabled || loading;
+---
+
+{
+  isAnchor && !isDisabled ? (
+    <a
+      href={href}
+      class={classes}
+      aria-busy={loading ? 'true' : undefined}
+      {...rest}
+    >
+      {loading && (
+        <span
+          class="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin-slow"
+          aria-hidden="true"
+        />
+      )}
+      <slot />
+    </a>
+  ) : isAnchor && isDisabled ? (
+    <span
+      class={classes}
+      role="link"
+      aria-disabled="true"
+      aria-busy={loading ? 'true' : undefined}
+    >
+      {loading && (
+        <span
+          class="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin-slow"
+          aria-hidden="true"
+        />
+      )}
+      <slot />
+    </span>
+  ) : (
+    <button
+      type={type}
+      class={classes}
+      disabled={isDisabled}
+      aria-busy={loading ? 'true' : undefined}
+      {...rest}
+    >
+      {loading && (
+        <span
+          class="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin-slow"
+          aria-hidden="true"
+        />
+      )}
+      <slot />
+    </button>
+  )
+}

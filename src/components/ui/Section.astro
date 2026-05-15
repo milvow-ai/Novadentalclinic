@@ -1,0 +1,57 @@
+---
+/**
+ * <Section> — vertical rhythm primitive.
+ *
+ * Tones:   light (bg-bg) | subtle (bg-subtle) | dark (bg-dark text-dark-fg)
+ * Padding: sm | default | lg
+ *
+ * Single source of truth for between-section spacing. NEVER use
+ * raw py-* on a section wrapper.
+ */
+import { cn } from '../../lib/cn';
+
+type Tone = 'light' | 'subtle' | 'dark';
+type Padding = 'sm' | 'default' | 'lg' | 'none';
+
+interface Props {
+  tone?: Tone;
+  padding?: Padding;
+  as?: 'section' | 'div' | 'header' | 'footer';
+  id?: string;
+  class?: string;
+  'aria-label'?: string;
+  'aria-labelledby'?: string;
+}
+
+const {
+  tone = 'light',
+  padding = 'default',
+  as: Tag = 'section',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const tones: Record<Tone, string> = {
+  light: 'bg-bg text-fg',
+  subtle: 'bg-subtle text-fg',
+  dark: 'bg-dark text-dark-fg',
+};
+
+const paddings: Record<Padding, string> = {
+  none: '',
+  sm: 'py-section-sm',
+  default: 'py-section',
+  lg: 'py-section-lg',
+};
+
+const classes = cn(
+  'relative w-full',
+  tones[tone],
+  paddings[padding],
+  className,
+);
+---
+
+<Tag class={classes} {...rest}>
+  <slot />
+</Tag>

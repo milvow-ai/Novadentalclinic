@@ -1,0 +1,33 @@
+---
+/**
+ * <Marquee> — continuously scrolling horizontal strip per §7.
+ *
+ * - 30s linear infinite loop.
+ * - Pauses on hover (CSS :hover on .marquee-container -> child .marquee-track).
+ * - Zero JS — pure CSS animation.
+ * - Respects prefers-reduced-motion (disabled via global.css).
+ *
+ * Slot content is duplicated server-side so the loop appears seamless.
+ */
+import { cn } from '../../lib/cn';
+
+interface Props {
+  class?: string;
+  ariaLabel?: string;
+}
+
+const { class: className, ariaLabel } = Astro.props;
+
+const html = await Astro.slots.render('default');
+---
+
+<div
+  class={cn('marquee-container', className)}
+  aria-label={ariaLabel}
+  role={ariaLabel ? 'marquee' : undefined}
+>
+  <div class="marquee-track">
+    <div class="flex gap-8 shrink-0" set:html={html}></div>
+    <div class="flex gap-8 shrink-0" aria-hidden="true" set:html={html}></div>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+---
+/**
+ * <Link> — text anchor primitive.
+ *
+ * Enforces §6.2: default text-fg, underline offset 4px, hover shifts to
+ * text-accent over 200ms ease-out-quint. Same behavior site-wide.
+ * Focus-visible ring via global :focus-visible + explicit class for
+ * consistent visual offset on inline anchors.
+ *
+ * External links auto-get rel="noopener noreferrer" + target="_blank"
+ * unless `external={false}` is explicitly passed.
+ */
+import { cn } from '../../lib/cn';
+
+interface Props {
+  href: string;
+  external?: boolean;
+  class?: string;
+  id?: string;
+  rel?: string;
+  target?: string;
+  'aria-label'?: string;
+}
+
+const {
+  href,
+  external,
+  class: className,
+  rel,
+  target,
+  ...rest
+} = Astro.props;
+
+const looksExternal =
+  /^(https?:|\/\/|mailto:|tel:)/i.test(href) && !href.includes('novadentalstudio.com');
+const isExternal = external ?? looksExternal;
+
+const classes = cn(
+  'text-fg underline decoration-1 underline-offset-4',
+  'transition-colors duration-fast ease-out-quint',
+  'hover:text-accent',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg rounded-sm',
+  className,
+);
+---
+
+<a
+  href={href}
+  class={classes}
+  rel={rel ?? (isExternal ? 'noopener noreferrer' : undefined)}
+  target={target ?? (isExternal ? '_blank' : undefined)}
+  {...rest}
+>
+  <slot />
+</a>

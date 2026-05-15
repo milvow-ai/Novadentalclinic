@@ -1,0 +1,62 @@
+---
+/**
+ * <Card> — surface primitive.
+ *
+ * Variants: default | feature | service | image-top
+ * Modes:    static (div) | interactive (button-like, with href -> anchor)
+ *
+ * Enforces §6.4: interactive cards lift -translate-y-1 + shadow grow
+ * over 300ms ease-out-quint. Always rounded-lg minimum. Focus-visible
+ * ring when interactive.
+ */
+import { cn } from '../../lib/cn';
+
+type Variant = 'default' | 'feature' | 'service' | 'image-top';
+
+interface Props {
+  variant?: Variant;
+  interactive?: boolean;
+  href?: string;
+  as?: 'div' | 'article' | 'section' | 'li';
+  class?: string;
+  id?: string;
+  'aria-label'?: string;
+}
+
+const {
+  variant = 'default',
+  interactive: interactiveProp,
+  href,
+  as = 'div',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const interactive = interactiveProp ?? !!href;
+
+const base = 'block bg-subtle rounded-lg overflow-hidden';
+
+const variants: Record<Variant, string> = {
+  default: 'p-6 md:p-8',
+  feature: 'p-8 md:p-10 rounded-xl',
+  service: 'p-6 md:p-8 flex flex-col gap-4',
+  'image-top': 'flex flex-col p-0',
+};
+
+const interactiveClasses = interactive
+  ? cn(
+      'shadow-sm cursor-pointer',
+      'transition-[transform,box-shadow] duration-base ease-out-quint',
+      'hover:-translate-y-1 hover:shadow-lg',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+    )
+  : '';
+
+const classes = cn(base, variants[variant], interactiveClasses, className);
+
+const Tag = href ? 'a' : as;
+---
+
+<Tag class={classes} href={href} {...rest}>
+  <slot />
+</Tag>

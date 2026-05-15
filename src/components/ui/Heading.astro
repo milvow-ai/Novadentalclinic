@@ -1,0 +1,71 @@
+---
+/**
+ * <Heading> — semantic heading primitive.
+ *
+ * `as` controls the semantic level (h1-h6).
+ * `size` controls the visual size — decoupled from semantics so an h1
+ * can render at display-md if the design calls for it.
+ *
+ * Display tokens auto-apply line-height, letter-spacing, and font-weight
+ * via Tailwind v4 @theme. Body sizes get sensible defaults.
+ */
+import { cn } from '../../lib/cn';
+
+type As = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+type Size =
+  | 'display-2xl'
+  | 'display-xl'
+  | 'display-lg'
+  | 'display-md'
+  | '4xl'
+  | '3xl'
+  | '2xl'
+  | 'xl';
+
+interface Props {
+  as?: As;
+  size?: Size;
+  tone?: 'default' | 'muted' | 'accent' | 'inherit';
+  balance?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  as: Tag = 'h2',
+  size = 'display-lg',
+  tone = 'default',
+  balance = true,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const sizeClasses: Record<Size, string> = {
+  'display-2xl': 'text-display-2xl tracking-display-2xl font-bold',
+  'display-xl': 'text-display-xl tracking-display-xl font-bold',
+  'display-lg': 'text-display-lg tracking-display-lg font-bold',
+  'display-md': 'text-display-md tracking-display-md font-semibold',
+  '4xl': 'text-4xl font-bold tracking-tight',
+  '3xl': 'text-3xl font-bold tracking-tight',
+  '2xl': 'text-2xl font-semibold',
+  xl: 'text-xl font-semibold',
+};
+
+const tones = {
+  default: 'text-fg',
+  muted: 'text-muted',
+  accent: 'text-accent',
+  inherit: '',
+};
+
+const classes = cn(
+  sizeClasses[size],
+  tones[tone],
+  balance && 'text-balance',
+  className,
+);
+---
+
+<Tag class={classes} {...rest}>
+  <slot />
+</Tag>

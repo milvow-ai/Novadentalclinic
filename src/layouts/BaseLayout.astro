@@ -1,0 +1,81 @@
+---
+/**
+ * <BaseLayout> — site-wide page chrome.
+ *
+ * Responsibilities:
+ *   - Load global.css (tokens + fonts + utilities).
+ *   - Render <SEO> meta + canonical/OG/Twitter.
+ *   - Inject JSON-LD schemas (one or many).
+ *   - Enable Astro View Transitions (<ClientRouter>) per §6.7.
+ *   - Mount global SmoothScroll (Lenis) per §7.
+ *
+ * Page-level slots:
+ *   - default: page body content
+ *   - head:    extra <head> additions
+ */
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import SEO from '../components/SEO.astro';
+import { SmoothScroll } from '../components/motion/SmoothScroll';
+import { website, localBusiness } from '../lib/schema';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  keywords?: string[];
+  schemas?: object[];
+  /** When true, includes default website + localBusiness schemas. Defaults to true. */
+  includeDefaultSchemas?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType,
+  noindex,
+  keywords,
+  schemas = [],
+  includeDefaultSchemas = true,
+  bodyClass,
+} = Astro.props;
+
+const defaultSchemas = includeDefaultSchemas ? [website(), localBusiness()] : [];
+const allSchemas = [...defaultSchemas, ...schemas];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <SEO
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      ogType={ogType}
+      noindex={noindex}
+      keywords={keywords}
+    />
+    <ClientRouter />
+    {allSchemas.map((s) => (
+      <script type="application/ld+json" set:html={JSON.stringify(s)} />
+    ))}
+    <slot name="head" />
+  </head>
+  <body class:list={['bg-bg text-fg font-sans antialiased min-h-screen', bodyClass]}>
+    <SmoothScroll client:load />
+    <a
+      href="#main"
+      class="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-50 focus-visible:rounded-full focus-visible:bg-accent focus-visible:text-accent-fg focus-visible:px-4 focus-visible:py-2"
+    >
+      Skip to content
+    </a>
+    <slot />
+  </body>
+</html>

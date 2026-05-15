@@ -1,0 +1,69 @@
+---
+/**
+ * <Text> — body copy primitive.
+ *
+ * Sizes:   xs | sm | base | lg
+ * Tones:   default | muted | accent | inherit
+ * Weights: regular | medium | semibold
+ *
+ * Default line-height: 1.6 (set on body in global.css). Override
+ * via leading class if needed for tight UI strings.
+ */
+import { cn } from '../../lib/cn';
+
+type Size = 'xs' | 'sm' | 'base' | 'lg';
+type Tone = 'default' | 'muted' | 'accent' | 'inherit';
+type Weight = 'regular' | 'medium' | 'semibold';
+
+interface Props {
+  as?: 'p' | 'span' | 'div' | 'li' | 'figcaption';
+  size?: Size;
+  tone?: Tone;
+  weight?: Weight;
+  balance?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  as: Tag = 'p',
+  size = 'base',
+  tone = 'default',
+  weight = 'regular',
+  balance = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const sizes: Record<Size, string> = {
+  xs: 'text-xs leading-snug',
+  sm: 'text-sm leading-snug',
+  base: 'text-base leading-relaxed',
+  lg: 'text-lg leading-relaxed',
+};
+
+const tones: Record<Tone, string> = {
+  default: 'text-fg',
+  muted: 'text-muted',
+  accent: 'text-accent',
+  inherit: '',
+};
+
+const weights: Record<Weight, string> = {
+  regular: 'font-normal',
+  medium: 'font-medium',
+  semibold: 'font-semibold',
+};
+
+const classes = cn(
+  sizes[size],
+  tones[tone],
+  weights[weight],
+  balance && 'text-balance',
+  className,
+);
+---
+
+<Tag class={classes} {...rest}>
+  <slot />
+</Tag>

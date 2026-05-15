@@ -1,0 +1,101 @@
+---
+/**
+ * <Image> — image primitive.
+ *
+ * - Always wrapped in a bg-subtle skeleton container while loading.
+ * - Always fades in over 600ms once present (via animate-image-fadein).
+ * - Always rounded (default rounded-xl per §4.4).
+ * - Always lazy unless `eager` is passed (above-the-fold).
+ *
+ * Accepts:
+ *   - Imported asset (ImageMetadata) -> uses Astro's optimized <Image>.
+ *   - Plain string URL -> renders <img> (remote patterns configured
+ *     in astro.config.mjs for known hosts).
+ */
+import { Image as AstroImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { cn } from '../../lib/cn';
+
+type Rounded = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full' | 'none';
+
+interface Props {
+  src: string | ImageMetadata;
+  alt: string;
+  width?: number;
+  height?: number;
+  rounded?: Rounded;
+  eager?: boolean;
+  aspect?: string;
+  cover?: boolean;
+  class?: string;
+  wrapperClass?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  rounded = 'xl',
+  eager = false,
+  aspect,
+  cover = true,
+  class: className,
+  wrapperClass,
+} = Astro.props;
+
+const radius: Record<Rounded, string> = {
+  none: 'rounded-none',
+  sm: 'rounded-sm',
+  md: 'rounded-md',
+  lg: 'rounded-lg',
+  xl: 'rounded-xl',
+  '2xl': 'rounded-2xl',
+  full: 'rounded-full',
+};
+
+const wrapperClasses = cn(
+  'relative overflow-hidden bg-subtle',
+  radius[rounded],
+  aspect,
+  wrapperClass,
+);
+
+const imgClasses = cn(
+  'animate-image-fadein',
+  cover && (aspect ? 'absolute inset-0 w-full h-full object-cover' : 'w-full h-auto object-cover'),
+  className,
+);
+
+const isString = typeof src === 'string';
+const loading = eager ? 'eager' : 'lazy';
+const decoding = 'async';
+const fetchpriority = eager ? 'high' : 'auto';
+---
+
+<div class={wrapperClasses}>
+  {
+    isString ? (
+      <img
+        src={src as string}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding={decoding}
+        fetchpriority={fetchpriority}
+        class={imgClasses}
+      />
+    ) : (
+      <AstroImage
+        src={src as ImageMetadata}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding={decoding}
+        class={imgClasses}
+      />
+    )
+  }
+</div>

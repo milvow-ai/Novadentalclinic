@@ -1,0 +1,85 @@
+---
+/**
+ * <SEO> — head metadata block.
+ *
+ * Renders: title, description, canonical, robots, OG, Twitter,
+ * favicon, theme-color, font preloads. Schema JSON-LD is injected
+ * separately in <BaseLayout> so callers can pass arbitrary schemas.
+ */
+import { SITE } from '../lib/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  keywords?: string[];
+}
+
+const {
+  title,
+  description = SITE.defaultDescription,
+  canonical,
+  ogImage = SITE.defaultOgImage,
+  ogType = 'website',
+  noindex = false,
+  keywords,
+} = Astro.props;
+
+const pathname = canonical ?? Astro.url.pathname;
+const canonicalURL = new URL(pathname, SITE.url).toString();
+const ogImageURL = new URL(ogImage, SITE.url).toString();
+const fullTitle = title.includes(SITE.name) ? title : `${title} — ${SITE.name}`;
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+{keywords && keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
+<link rel="canonical" href={canonicalURL} />
+
+{noindex ? (
+  <meta name="robots" content="noindex, nofollow" />
+) : (
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+)}
+
+<!-- Font preloads (Switzer) -->
+<link rel="preload" href="/fonts/Switzer-Regular.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/Switzer-Medium.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/Switzer-SemiBold.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/Switzer-Bold.woff2" as="font" type="font/woff2" crossorigin />
+
+<!-- Open Graph -->
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:image" content={ogImageURL} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content={SITE.locale} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageURL} />
+
+<!-- Favicons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="alternate icon" href="/favicon.ico" />
+
+<!-- Theme color & misc -->
+<meta name="theme-color" content={SITE.themeColor} />
+<meta name="apple-mobile-web-app-title" content={SITE.shortName} />
+<meta name="format-detection" content="telephone=no" />
+
+<!-- Sitemap -->
+<link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
