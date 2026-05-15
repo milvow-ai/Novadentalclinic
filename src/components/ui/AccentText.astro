@@ -1,0 +1,30 @@
+---
+/**
+ * <AccentText> — splits a sentence at a target phrase and wraps the
+ * matched phrase in a span styled with the accent color.
+ *
+ * Case-insensitive match; preserves original casing in output. If the
+ * phrase is not found, renders the full text unchanged.
+ *
+ * Used inside <Heading> slots to highlight a key word per the
+ * reference language (e.g. "Your <accent>best dental</accent> experience").
+ */
+interface Props {
+  text: string;
+  accent: string;
+  accentClass?: string;
+}
+
+const { text, accent, accentClass = 'text-accent' } = Astro.props;
+
+const lower = text.toLowerCase();
+const idx = accent ? lower.indexOf(accent.toLowerCase()) : -1;
+
+const before = idx >= 0 ? text.slice(0, idx) : text;
+const matched = idx >= 0 ? text.slice(idx, idx + accent.length) : '';
+const after = idx >= 0 ? text.slice(idx + accent.length) : '';
+---
+
+<Fragment>
+  {before}{matched && <span class={accentClass}>{matched}</span>}{after}
+</Fragment>

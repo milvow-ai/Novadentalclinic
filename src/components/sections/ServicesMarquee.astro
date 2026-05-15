@@ -1,0 +1,34 @@
+---
+/**
+ * <ServicesMarquee> — full-width accent-blue marquee strip.
+ *
+ * Continuously scrolls a list of service names separated by a tooth icon.
+ * Uses the <Marquee> primitive (CSS-only 30s loop, pauses on hover).
+ */
+import Marquee from '../motion/Marquee.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  items: string[];
+  padding?: 'sm' | 'default';
+}
+
+const { items, padding = 'sm' } = Astro.props;
+
+const paddingClass = padding === 'default' ? 'py-8 md:py-10' : 'py-5 md:py-6';
+---
+
+<section class:list={['bg-accent text-accent-fg overflow-hidden', paddingClass]} aria-label="Featured services">
+  <Marquee ariaLabel="Featured services">
+    {items.map((item) => (
+      <Fragment>
+        <span class="inline-flex items-center text-2xl md:text-3xl font-semibold tracking-tight whitespace-nowrap px-6">
+          {item}
+        </span>
+        <span class="inline-flex items-center text-accent-fg/60 px-2" aria-hidden="true">
+          <Icon name="tooth" size={28} />
+        </span>
+      </Fragment>
+    ))}
+  </Marquee>
+</section>

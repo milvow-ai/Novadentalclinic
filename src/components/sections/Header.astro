@@ -1,0 +1,127 @@
+---
+/**
+ * <Header> — sticky pill navigation.
+ *
+ * A floating rounded-full nav bar with logo, center links, and a primary
+ * CTA. On mobile, links collapse into a hamburger that toggles a
+ * full-width menu sheet below the nav.
+ *
+ * Raw anchors are used for nav links (not <Link>) because nav anchors
+ * have different default chrome (no underline, pill hover bg). This
+ * component is the system's source-of-truth for nav-link styling.
+ */
+import Container from '../ui/Container.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  brand: string;
+  links: NavLink[];
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+const { brand, links, ctaLabel, ctaHref } = Astro.props;
+
+const navLinkClasses =
+  'inline-flex items-center text-sm font-medium text-fg px-4 py-2 rounded-full transition-colors duration-fast ease-out-quint hover:text-accent hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg';
+---
+
+<header class="sticky top-3 md:top-4 z-50 px-3 md:px-6">
+  <Container class="max-w-5xl">
+    <nav
+      class="flex items-center justify-between gap-3 bg-bg/85 backdrop-blur-md border border-border rounded-full shadow-md px-3 py-2 md:px-5 md:py-2.5"
+      aria-label="Primary"
+    >
+      <a
+        href="/"
+        class="flex items-center gap-2.5 text-fg font-semibold rounded-full px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        aria-label={`${brand} — home`}
+      >
+        <span class="inline-grid place-items-center w-8 h-8 rounded-full bg-accent text-accent-fg text-xs font-bold shadow-glow" aria-hidden="true">N</span>
+        <span class="hidden sm:inline text-base">{brand}</span>
+      </a>
+
+      <ul class="hidden lg:flex items-center gap-1">
+        {links.map((l) => (
+          <li><a href={l.href} class={navLinkClasses}>{l.label}</a></li>
+        ))}
+      </ul>
+
+      <div class="flex items-center gap-2">
+        <Button variant="primary" size="sm" href={ctaHref} class="hidden sm:inline-flex">
+          {ctaLabel}
+        </Button>
+        <button
+          id="nova-mobile-menu-btn"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nova-mobile-menu"
+          aria-label="Open menu"
+          class="lg:hidden w-10 h-10 grid place-items-center rounded-full text-fg hover:bg-subtle transition-colors duration-fast ease-out-quint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          <span data-icon="menu"><Icon name="menu" size={20} /></span>
+          <span data-icon="close" class="hidden"><Icon name="x" size={20} /></span>
+        </button>
+      </div>
+    </nav>
+
+    <div
+      id="nova-mobile-menu"
+      data-open="false"
+      class="lg:hidden hidden data-[open=true]:block mt-2 bg-bg border border-border rounded-2xl shadow-lg p-3 space-y-1"
+    >
+      {links.map((l) => (
+        <a
+          href={l.href}
+          class="block px-4 py-3 text-base font-medium text-fg rounded-md hover:bg-subtle hover:text-accent transition-colors duration-fast ease-out-quint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          {l.label}
+        </a>
+      ))}
+      <div class="pt-2 sm:hidden">
+        <Button variant="primary" size="md" href={ctaHref} fullWidth>{ctaLabel}</Button>
+      </div>
+    </div>
+  </Container>
+</header>
+
+<script>
+  function initNovaMobileMenu() {
+    const btn = document.getElementById('nova-mobile-menu-btn');
+    const menu = document.getElementById('nova-mobile-menu');
+    if (!btn || !menu) return;
+    if (btn.dataset.bound === 'true') return;
+    btn.dataset.bound = 'true';
+
+    btn.addEventListener('click', () => {
+      const open = menu.dataset.open === 'true';
+      const next = !open;
+      menu.dataset.open = String(next);
+      btn.setAttribute('aria-expanded', String(next));
+      btn.setAttribute('aria-label', next ? 'Close menu' : 'Open menu');
+      const menuIcon = btn.querySelector('[data-icon="menu"]');
+      const closeIcon = btn.querySelector('[data-icon="close"]');
+      if (menuIcon && closeIcon) {
+        menuIcon.classList.toggle('hidden', next);
+        closeIcon.classList.toggle('hidden', !next);
+      }
+    });
+
+    // Close menu when a link inside it is clicked
+    menu.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => {
+        menu.dataset.open = 'false';
+        btn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  initNovaMobileMenu();
+  document.addEventListener('astro:page-load', initNovaMobileMenu);
+</script>

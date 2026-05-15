@@ -1,0 +1,67 @@
+---
+/**
+ * <Stats> — social-proof band.
+ *
+ * Left column: three large statistics (display-lg numbers + muted labels).
+ * Right column: 3-item checklist with checkmark icons + primary CTA.
+ * Two-column desktop, stacked mobile.
+ */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import Heading from '../ui/Heading.astro';
+import Text from '../ui/Text.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { FadeIn } from '../motion/FadeIn';
+
+interface StatItem {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  items: StatItem[];
+  checklist: string[];
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+const { items, checklist, ctaLabel, ctaHref } = Astro.props;
+---
+
+<Section tone="subtle" padding="default" aria-label="By the numbers">
+  <Container>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      {/* Stats */}
+      <FadeIn client:load>
+        <ul class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-8 lg:gap-10">
+          {items.map((stat) => (
+            <li class="space-y-2 lg:flex lg:items-baseline lg:gap-6 lg:space-y-0">
+              <Heading as="span" size="display-lg" tone="accent" class="block lg:min-w-[8rem]">
+                {stat.value}
+              </Heading>
+              <Text size="base" tone="muted" class="block">{stat.label}</Text>
+            </li>
+          ))}
+        </ul>
+      </FadeIn>
+
+      {/* Checklist + CTA */}
+      <FadeIn client:load delay={0.1}>
+        <div class="space-y-8 lg:pl-8 lg:border-l lg:border-border">
+          <ul class="space-y-4">
+            {checklist.map((item) => (
+              <li class="flex items-start gap-4">
+                <span class="mt-1 w-7 h-7 rounded-full bg-accent-soft text-accent grid place-items-center shrink-0" aria-hidden="true">
+                  <Icon name="check" size={16} strokeWidth={2.5} />
+                </span>
+                <Text size="lg" weight="medium">{item}</Text>
+              </li>
+            ))}
+          </ul>
+          <Button variant="primary" size="lg" href={ctaHref}>{ctaLabel}</Button>
+        </div>
+      </FadeIn>
+    </div>
+  </Container>
+</Section>

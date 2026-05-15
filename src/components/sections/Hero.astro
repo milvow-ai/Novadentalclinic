@@ -1,0 +1,161 @@
+---
+/**
+ * <Hero> — homepage hero.
+ *
+ * Two-column on desktop:
+ *  - Left: eyebrow chip, display-xl accented headline, subhead, two CTAs.
+ *  - Right: large rounded portrait with a bg-accent-soft circular shape
+ *    behind it as decorative accent.
+ *
+ * Below the split: a floating quick-booking card that overlaps the seam
+ * between Hero and the next section (via negative bottom margin).
+ */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import Heading from '../ui/Heading.astro';
+import Text from '../ui/Text.astro';
+import Button from '../ui/Button.astro';
+import Image from '../ui/Image.astro';
+import Icon from '../ui/Icon.astro';
+import Input from '../ui/Input.astro';
+import AccentText from '../ui/AccentText.astro';
+import { FadeIn } from '../motion/FadeIn';
+
+interface Props {
+  eyebrow: string;
+  headline: string;
+  accent: string;
+  subhead: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta: { label: string; href: string };
+  portrait: { src: string; alt: string };
+  quickBookingLabel: string;
+}
+
+const {
+  eyebrow,
+  headline,
+  accent,
+  subhead,
+  primaryCta,
+  secondaryCta,
+  portrait,
+  quickBookingLabel,
+} = Astro.props;
+---
+
+<Section tone="light" padding="sm" as="header" aria-label="Hero" class="pt-12 md:pt-16 pb-0 md:pb-0">
+  <Container>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      {/* Left — copy + CTAs */}
+      <FadeIn client:load>
+        <div class="space-y-7 max-w-xl">
+          <span class="inline-flex items-center gap-2 rounded-full bg-accent-soft text-accent text-xs font-medium px-3.5 py-1.5">
+            <Icon name="sparkles" size={14} />
+            <span>{eyebrow}</span>
+          </span>
+
+          <Heading as="h1" size="display-xl">
+            <AccentText text={headline} accent={accent} />
+          </Heading>
+
+          <Text size="lg" tone="muted">{subhead}</Text>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <Button variant="primary" size="lg" href={primaryCta.href}>
+              {primaryCta.label}
+            </Button>
+            <Button variant="ghost" size="lg" href={secondaryCta.href}>
+              <span class="inline-grid place-items-center w-7 h-7 rounded-full bg-accent text-accent-fg shrink-0" aria-hidden="true">
+                <Icon name="play" size={10} />
+              </span>
+              <span>{secondaryCta.label}</span>
+            </Button>
+          </div>
+        </div>
+      </FadeIn>
+
+      {/* Right — portrait with circular accent */}
+      <FadeIn client:load delay={0.1}>
+        <div class="relative max-w-md mx-auto lg:mx-0 lg:ml-auto">
+          {/* Decorative circle behind portrait */}
+          <div
+            class="absolute inset-0 grid place-items-center -z-0 pointer-events-none"
+            aria-hidden="true"
+          >
+            <div class="w-[110%] aspect-square rounded-full bg-accent-soft"></div>
+          </div>
+          <div class="relative">
+            <Image
+              src={portrait.src}
+              alt={portrait.alt}
+              width={800}
+              height={1000}
+              eager
+              rounded="2xl"
+              aspect="aspect-[4/5]"
+            />
+            {/* Floating mini stat badge */}
+            <div class="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 bg-bg rounded-2xl shadow-lg border border-border px-4 py-3 flex items-center gap-3">
+              <span class="inline-grid place-items-center w-10 h-10 rounded-full bg-accent-soft text-accent shrink-0" aria-hidden="true">
+                <Icon name="shield-check" size={20} />
+              </span>
+              <div class="leading-tight">
+                <div class="text-xs font-mono text-muted">Trusted by</div>
+                <div class="text-sm font-semibold text-fg">20K+ patients</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </FadeIn>
+    </div>
+
+    {/* Floating quick-booking card — overlaps into next section */}
+    <FadeIn client:load delay={0.2}>
+      <div class="relative z-10 mt-16 md:mt-20 lg:-mb-24 lg:mb-0 lg:translate-y-12">
+        <div class="bg-bg rounded-2xl shadow-lg border border-border p-5 md:p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="inline-grid place-items-center w-9 h-9 rounded-full bg-accent-soft text-accent" aria-hidden="true">
+              <Icon name="calendar" size={18} />
+            </span>
+            <Text size="sm" weight="semibold">{quickBookingLabel}</Text>
+          </div>
+
+          <form
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end"
+            aria-label="Quick booking"
+          >
+            <Input
+              name="quick-name"
+              label="Full name"
+              type="text"
+              placeholder="Your name"
+              autocomplete="name"
+            />
+            <Input
+              name="quick-phone"
+              label="Phone"
+              type="tel"
+              placeholder="(000) 000-0000"
+              autocomplete="tel"
+              required
+            />
+            <Input
+              name="quick-date"
+              label="Date"
+              type="date"
+            />
+            <Input
+              name="quick-time"
+              label="Time"
+              type="time"
+            />
+            <Button variant="primary" size="md" type="submit" class="w-full lg:w-auto">
+              Book
+            </Button>
+          </form>
+        </div>
+      </div>
+    </FadeIn>
+  </Container>
+</Section>

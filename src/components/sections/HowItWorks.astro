@@ -1,0 +1,76 @@
+---
+/**
+ * <HowItWorks> — 4-step process band.
+ *
+ * Each step: large rounded-full accent circle with step number + icon,
+ * title, short description. On desktop the circles are connected by a
+ * thin dashed line behind them.
+ */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import Heading from '../ui/Heading.astro';
+import Text from '../ui/Text.astro';
+import Icon from '../ui/Icon.astro';
+import type { IconName } from '../ui/icon-names';
+import AccentText from '../ui/AccentText.astro';
+import { FadeIn } from '../motion/FadeIn';
+
+interface Step {
+  number: string;
+  title: string;
+  description: string;
+}
+
+interface Props {
+  eyebrow: string;
+  headline: string;
+  accent: string;
+  steps: Step[];
+}
+
+const { eyebrow, headline, accent, steps } = Astro.props;
+
+// Icons cycle through these for the 4 steps. Order matches the typical
+// booking journey: calendar -> stethoscope -> sparkles -> heart-pulse.
+const stepIcons: IconName[] = ['calendar', 'stethoscope', 'sparkles', 'heart-pulse'];
+---
+
+<Section tone="light" padding="default" id="how-it-works" aria-labelledby="how-it-works-heading">
+  <Container>
+    <FadeIn client:load>
+      <div class="max-w-3xl space-y-4 mb-14">
+        <Text size="sm" tone="accent" weight="medium" class="uppercase tracking-widest">{eyebrow}</Text>
+        <Heading id="how-it-works-heading" as="h2" size="display-lg">
+          <AccentText text={headline} accent={accent} />
+        </Heading>
+      </div>
+    </FadeIn>
+
+    <FadeIn client:load delay={0.1}>
+      <div class="relative">
+        {/* Dashed connector line — desktop only, behind circles */}
+        <div
+          class="hidden md:block absolute top-12 left-[12.5%] right-[12.5%] h-px border-t border-dashed border-border"
+          aria-hidden="true"
+        ></div>
+
+        <ol class="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6 relative">
+          {steps.map((step, i) => (
+            <li class="flex flex-col items-center text-center space-y-4 md:space-y-5">
+              <div class="relative z-10 w-24 h-24 rounded-full bg-accent text-accent-fg grid place-items-center shadow-glow">
+                <span class="absolute top-3 left-1/2 -translate-x-1/2 text-xs font-mono font-semibold opacity-80">
+                  {step.number}
+                </span>
+                <Icon name={stepIcons[i % stepIcons.length]} size={28} strokeWidth={1.75} />
+              </div>
+              <div class="space-y-2 max-w-xs">
+                <Heading as="h3" size="xl">{step.title}</Heading>
+                <Text size="sm" tone="muted">{step.description}</Text>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </FadeIn>
+  </Container>
+</Section>

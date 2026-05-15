@@ -1,38 +1,368 @@
 ---
 /**
- * Home page — placeholder shell until Step 7 (section components)
- * and Step 8 (page assembly) are built. Confirms BaseLayout + token
- * pipeline is wired correctly end-to-end.
+ * Home — Nova Dental Studio.
+ *
+ * Single-page landing assembled from /sections components. All copy lives
+ * in the `novaContent` object below and is passed in as props so sections
+ * remain content-agnostic (reusable for future clients).
+ *
+ * Image strategy for the dry run:
+ *   - Hero portrait: Unsplash (real dental imagery per spec).
+ *   - All other images: picsum.photos with semantic seeds — guaranteed to
+ *     resolve, deterministic across builds. Swap for curated Unsplash
+ *     dental photos during the content/polish pass.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Section from '../components/ui/Section.astro';
-import Container from '../components/ui/Container.astro';
-import Heading from '../components/ui/Heading.astro';
-import Text from '../components/ui/Text.astro';
-import Button from '../components/ui/Button.astro';
-import Link from '../components/ui/Link.astro';
+import Header from '../components/sections/Header.astro';
+import Hero from '../components/sections/Hero.astro';
+import Stats from '../components/sections/Stats.astro';
+import About from '../components/sections/About.astro';
+import ServicesMarquee from '../components/sections/ServicesMarquee.astro';
+import Services from '../components/sections/Services.astro';
+import CaseStories from '../components/sections/CaseStories.astro';
+import HowItWorks from '../components/sections/HowItWorks.astro';
+import BookingForm from '../components/sections/BookingForm.astro';
+import Footer from '../components/sections/Footer.astro';
+import { service } from '../lib/schema';
+import type { IconName } from '../components/ui/icon-names';
+
+// ===================================================================
+// CONTENT — all hardcoded copy for Nova lives here. Sections are content-agnostic.
+// ===================================================================
+const novaContent = {
+  brand: 'Nova Dental Studio',
+  tagline: 'Premium cosmetic & family dental care',
+
+  nav: {
+    links: [
+      { label: 'Home', href: '/' },
+      { label: 'Services', href: '#services' },
+      { label: 'About', href: '#about' },
+      { label: 'Case Stories', href: '#case-stories' },
+      { label: 'How It Works', href: '#how-it-works' },
+      { label: 'Contact', href: '#booking' },
+    ],
+    ctaLabel: 'Book now',
+    ctaHref: '#booking',
+  },
+
+  hero: {
+    eyebrow: 'Premium dentistry, made calm',
+    headline: 'Your best dental experience awaits',
+    accent: 'best dental',
+    subhead:
+      "Cosmetic and family dental care built around your comfort. We blend modern technique with calm, transparent care — for the kind of dentistry you'll actually look forward to.",
+    primaryCta: { label: 'Book consultation', href: '#booking' },
+    secondaryCta: { label: 'Watch our approach', href: '#about' },
+    portrait: {
+      src: 'https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=1000&auto=format&fit=crop',
+      alt: 'Dr. Amelia Reyes — lead dentist at Nova Dental Studio',
+    },
+    quickBookingLabel: 'Quick booking — pick a slot in under a minute',
+  },
+
+  stats: {
+    items: [
+      { value: '10+', label: 'Skilled Dentists' },
+      { value: '99%', label: 'Patient Satisfaction' },
+      { value: '20K+', label: 'Appointments Booked' },
+    ],
+    checklist: [
+      'Easy online appointment booking',
+      'Experienced and caring dentists',
+      'Advanced dental equipment',
+    ],
+    ctaLabel: 'Book an appointment',
+    ctaHref: '#booking',
+  },
+
+  about: {
+    eyebrow: 'About us',
+    headline: '15 years of expertise in dental care',
+    accent: 'dental care',
+    body:
+      'Nova Dental Studio is a family-run practice committed to gentle, modern, evidence-based care. Our team has spent fifteen years building real relationships with patients across the city — through routine cleanings, cosmetic work, and emergency visits — and that history shapes every decision we make at the chair.',
+    bullets: [
+      'Premium dental services you can trust',
+      'Award-winning experts in dental care',
+      'Dedicated experts behind every smile',
+    ],
+    ctaLabel: 'Learn more',
+    ctaHref: '#services',
+    images: {
+      main: 'https://picsum.photos/seed/nova-about-main/600/800',
+      secondary: 'https://picsum.photos/seed/nova-about-clinic/400/300',
+      tertiary: 'https://picsum.photos/seed/nova-about-tools/400/300',
+    },
+  },
+
+  marquee: [
+    'General Dentistry',
+    'Teeth Whitening',
+    'Dental Implant',
+    'Dental Sealants',
+    'Cosmetic Dentistry',
+    'Root Canal',
+  ],
+
+  services: {
+    eyebrow: 'Our services',
+    headline: 'A wide range of services for your best smile',
+    accent: 'wide range',
+    ctaLabel: 'Explore all services',
+    ctaHref: '#services',
+    items: [
+      {
+        name: 'General Dentistry',
+        description: 'Routine exams, cleanings, fillings — the steady foundation of healthy teeth.',
+        image: 'https://picsum.photos/seed/nova-svc-general/800/600',
+        icon: 'stethoscope' as IconName,
+      },
+      {
+        name: 'Teeth Whitening',
+        description: 'Professional whitening tuned to your enamel for natural, lasting results.',
+        image: 'https://picsum.photos/seed/nova-svc-whitening/800/600',
+        icon: 'sparkles' as IconName,
+      },
+      {
+        name: 'Dental Implants',
+        description: 'Replace missing teeth with implants that look, feel, and function like your own.',
+        image: 'https://picsum.photos/seed/nova-svc-implants/800/600',
+        icon: 'shield-check' as IconName,
+      },
+      {
+        name: 'Cosmetic Dentistry',
+        description: 'Veneers, bonding, and smile design — crafted around the face you already have.',
+        image: 'https://picsum.photos/seed/nova-svc-cosmetic/800/600',
+        icon: 'smile' as IconName,
+      },
+      {
+        name: 'Root Canal Therapy',
+        description: 'Modern, comfortable root canal treatment that saves the natural tooth.',
+        image: 'https://picsum.photos/seed/nova-svc-rootcanal/800/600',
+        icon: 'heart-pulse' as IconName,
+      },
+      {
+        name: 'Family & Pediatric',
+        description: 'Gentle care from first tooth to adult dental health — for the whole family.',
+        image: 'https://picsum.photos/seed/nova-svc-family/800/600',
+        icon: 'baby' as IconName,
+      },
+    ],
+  },
+
+  caseStories: {
+    eyebrow: 'Case stories',
+    headline: 'Real journeys to happier smiles',
+    accent: 'happier smiles',
+    ctaLabel: 'Explore all case stories',
+    ctaHref: '#case-stories',
+    items: [
+      {
+        year: '2026',
+        title: 'A complete smile reset for Mira',
+        tags: ['Cosmetic', 'Veneers'],
+        image: 'https://picsum.photos/seed/nova-case-mira/1200/900',
+      },
+      {
+        year: '2025',
+        title: "Olivia's confidence after braces",
+        tags: ['Orthodontics', 'Braces'],
+        image: 'https://picsum.photos/seed/nova-case-olivia/1200/900',
+      },
+    ],
+  },
+
+  howItWorks: {
+    eyebrow: 'How it works',
+    headline: 'The path to your perfect smile',
+    accent: 'perfect smile',
+    steps: [
+      {
+        number: '01',
+        title: 'Easy online booking',
+        description: 'Pick a slot in under a minute. No phone tag, no hold music.',
+      },
+      {
+        number: '02',
+        title: 'Consultation & exam',
+        description: 'We listen first. Then a thorough exam — explained in plain language.',
+      },
+      {
+        number: '03',
+        title: 'Personalized treatment plan',
+        description: 'A plan built around your goals, your timeline, your comfort.',
+      },
+      {
+        number: '04',
+        title: 'Ongoing care & follow-up',
+        description: 'We stay with you after the chair — dental health is a long game.',
+      },
+    ],
+  },
+
+  booking: {
+    eyebrow: 'Appointment',
+    headline: 'Online booking for your dental visit',
+    subhead: "Tell us when works for you. We'll confirm within the hour during clinic time.",
+    dentists: [
+      'Dr. Amelia Reyes',
+      'Dr. James Carter',
+      'Dr. Priya Mehta',
+      'Dr. Marcus Lee',
+    ],
+    services: [
+      'General Dentistry',
+      'Teeth Whitening',
+      'Dental Implants',
+      'Cosmetic Dentistry',
+      'Root Canal Therapy',
+      'Family & Pediatric',
+    ],
+    hours: [
+      { day: 'Mon – Fri', hours: '9:00 AM – 7:00 PM' },
+      { day: 'Saturday', hours: '10:00 AM – 5:00 PM' },
+      { day: 'Sunday', hours: 'Closed' },
+    ],
+    contact: {
+      address: '2464 Royal Ln, Mesa, New Jersey 45463',
+      phone: '(000) 000-0000',
+      email: 'hello@novadentalstudio.com',
+    },
+  },
+
+  footer: {
+    servicesLinks: [
+      { label: 'General Dentistry', href: '#services' },
+      { label: 'Teeth Whitening', href: '#services' },
+      { label: 'Dental Implants', href: '#services' },
+      { label: 'Cosmetic Dentistry', href: '#services' },
+      { label: 'Root Canal', href: '#services' },
+      { label: 'Family & Pediatric', href: '#services' },
+    ],
+    quickLinks: [
+      { label: 'About us', href: '#about' },
+      { label: 'Case stories', href: '#case-stories' },
+      { label: 'How it works', href: '#how-it-works' },
+      { label: 'Book appointment', href: '#booking' },
+    ],
+    social: {
+      instagram: 'https://instagram.com/novadentalstudio',
+      facebook: 'https://facebook.com/novadentalstudio',
+    },
+  },
+};
+
+// ===================================================================
+// SEO — service-level JSON-LD on top of the default WebSite + Dentist
+// schemas auto-injected by BaseLayout.
+// ===================================================================
+const serviceSchemas = novaContent.services.items.map((s) =>
+  service({
+    name: s.name,
+    description: s.description,
+    url: '/#services',
+  }),
+);
 ---
 
 <BaseLayout
-  title="Premium Cosmetic & Family Dental"
-  description="Nova Dental Studio — premium cosmetic and family dental care. Gentle, modern, evidence-based. Trusted by families for 15+ years."
+  title="Nova Dental Studio — Premium Cosmetic & Family Dental Care"
+  description="Premium cosmetic and family dental care in Mesa, NJ. Gentle, modern, evidence-based dentistry trusted by 20,000+ patients over 15+ years. Book your visit online."
+  keywords={[
+    'dentist',
+    'cosmetic dentistry',
+    'family dentist',
+    'teeth whitening',
+    'dental implants',
+    'root canal',
+    'Mesa NJ dentist',
+    'Nova Dental Studio',
+  ]}
+  ogImage="/og-default.jpg"
+  schemas={serviceSchemas}
 >
-  <Section tone="light" padding="lg" id="main">
-    <Container class="flex flex-col items-start gap-8 max-w-3xl">
-      <Text size="sm" tone="muted" weight="medium" class="uppercase tracking-widest">
-        Coming soon
-      </Text>
-      <Heading as="h1" size="display-xl">
-        Nova Dental Studio
-      </Heading>
-      <Text size="lg" tone="muted">
-        Marketing site under construction. Design system live. Audit the primitives at
-        <Link href="/kitchen-sink"> /kitchen-sink</Link>.
-      </Text>
-      <div class="flex flex-wrap gap-4">
-        <Button variant="primary" size="lg" href="/kitchen-sink">View kitchen sink</Button>
-        <Button variant="ghost" size="lg" href="/llms.txt">llms.txt</Button>
-      </div>
-    </Container>
-  </Section>
+  <Header
+    brand={novaContent.brand}
+    links={novaContent.nav.links}
+    ctaLabel={novaContent.nav.ctaLabel}
+    ctaHref={novaContent.nav.ctaHref}
+  />
+
+  <main id="main">
+    <Hero
+      eyebrow={novaContent.hero.eyebrow}
+      headline={novaContent.hero.headline}
+      accent={novaContent.hero.accent}
+      subhead={novaContent.hero.subhead}
+      primaryCta={novaContent.hero.primaryCta}
+      secondaryCta={novaContent.hero.secondaryCta}
+      portrait={novaContent.hero.portrait}
+      quickBookingLabel={novaContent.hero.quickBookingLabel}
+    />
+
+    <Stats
+      items={novaContent.stats.items}
+      checklist={novaContent.stats.checklist}
+      ctaLabel={novaContent.stats.ctaLabel}
+      ctaHref={novaContent.stats.ctaHref}
+    />
+
+    <About
+      eyebrow={novaContent.about.eyebrow}
+      headline={novaContent.about.headline}
+      accent={novaContent.about.accent}
+      body={novaContent.about.body}
+      bullets={novaContent.about.bullets}
+      ctaLabel={novaContent.about.ctaLabel}
+      ctaHref={novaContent.about.ctaHref}
+      images={novaContent.about.images}
+    />
+
+    <ServicesMarquee items={novaContent.marquee} />
+
+    <Services
+      eyebrow={novaContent.services.eyebrow}
+      headline={novaContent.services.headline}
+      accent={novaContent.services.accent}
+      ctaLabel={novaContent.services.ctaLabel}
+      ctaHref={novaContent.services.ctaHref}
+      items={novaContent.services.items}
+    />
+
+    <CaseStories
+      eyebrow={novaContent.caseStories.eyebrow}
+      headline={novaContent.caseStories.headline}
+      accent={novaContent.caseStories.accent}
+      ctaLabel={novaContent.caseStories.ctaLabel}
+      ctaHref={novaContent.caseStories.ctaHref}
+      items={novaContent.caseStories.items}
+    />
+
+    <HowItWorks
+      eyebrow={novaContent.howItWorks.eyebrow}
+      headline={novaContent.howItWorks.headline}
+      accent={novaContent.howItWorks.accent}
+      steps={novaContent.howItWorks.steps}
+    />
+
+    <BookingForm
+      eyebrow={novaContent.booking.eyebrow}
+      headline={novaContent.booking.headline}
+      subhead={novaContent.booking.subhead}
+      dentists={novaContent.booking.dentists}
+      services={novaContent.booking.services}
+      hours={novaContent.booking.hours}
+      contact={novaContent.booking.contact}
+    />
+  </main>
+
+  <Footer
+    brand={novaContent.brand}
+    tagline={novaContent.tagline}
+    servicesLinks={novaContent.footer.servicesLinks}
+    quickLinks={novaContent.footer.quickLinks}
+    contact={novaContent.booking.contact}
+    social={novaContent.footer.social}
+  />
 </BaseLayout>

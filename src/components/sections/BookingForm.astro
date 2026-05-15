@@ -1,0 +1,191 @@
+---
+/**
+ * <BookingForm> — full appointment form + clinic info sidebar.
+ *
+ * Left column: eyebrow, headline, subhead, form (name, phone, email,
+ * date, time, dentist select, service select, submit).
+ * Right column: bg-subtle card with clinic hours, address, phone.
+ */
+import Section from '../ui/Section.astro';
+import Container from '../ui/Container.astro';
+import Heading from '../ui/Heading.astro';
+import Text from '../ui/Text.astro';
+import Button from '../ui/Button.astro';
+import Input from '../ui/Input.astro';
+import Icon from '../ui/Icon.astro';
+import { FadeIn } from '../motion/FadeIn';
+
+interface HoursItem {
+  day: string;
+  hours: string;
+}
+
+interface Props {
+  eyebrow: string;
+  headline: string;
+  subhead: string;
+  dentists: string[];
+  services: string[];
+  hours: HoursItem[];
+  contact: {
+    address: string;
+    phone: string;
+    email: string;
+  };
+  submitLabel?: string;
+}
+
+const {
+  eyebrow,
+  headline,
+  subhead,
+  dentists,
+  services,
+  hours,
+  contact,
+  submitLabel = 'Book appointment',
+} = Astro.props;
+---
+
+<Section tone="light" padding="default" id="booking" aria-labelledby="booking-heading">
+  <Container>
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_22rem] gap-10 lg:gap-14">
+      {/* Form column */}
+      <FadeIn client:load>
+        <div class="space-y-8">
+          <div class="space-y-4 max-w-2xl">
+            <Text size="sm" tone="accent" weight="medium" class="uppercase tracking-widest">{eyebrow}</Text>
+            <Heading id="booking-heading" as="h2" size="display-lg">{headline}</Heading>
+            <Text size="lg" tone="muted">{subhead}</Text>
+          </div>
+
+          <form class="grid grid-cols-1 md:grid-cols-2 gap-5" aria-label="Appointment booking">
+            <Input
+              name="full-name"
+              label="Full name"
+              type="text"
+              placeholder="Your name"
+              autocomplete="name"
+              required
+            />
+            <Input
+              name="phone"
+              label="Phone"
+              type="tel"
+              placeholder="(000) 000-0000"
+              autocomplete="tel"
+              required
+            />
+            <Input
+              name="email"
+              label="Email"
+              type="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              class="md:col-span-2"
+            />
+            <Input
+              name="preferred-date"
+              label="Preferred date"
+              type="date"
+            />
+            <Input
+              name="preferred-time"
+              label="Preferred time"
+              type="time"
+            />
+            <Input as="select" name="preferred-dentist" label="Preferred dentist">
+              <option value="">Any available</option>
+              {dentists.map((d) => <option value={d}>{d}</option>)}
+            </Input>
+            <Input as="select" name="service" label="Service interested in">
+              <option value="">I'm not sure yet</option>
+              {services.map((s) => <option value={s}>{s}</option>)}
+            </Input>
+            <Input
+              as="textarea"
+              name="notes"
+              label="Anything we should know? (optional)"
+              placeholder="Allergies, anxieties, prior treatments…"
+              rows={4}
+              class="md:col-span-2"
+            />
+
+            <div class="md:col-span-2 pt-2">
+              <Button variant="primary" size="lg" type="submit" fullWidth>
+                {submitLabel}
+              </Button>
+              <Text size="xs" tone="muted" class="mt-3 text-center">
+                We'll confirm within the hour during clinic time. No commitment until you confirm.
+              </Text>
+            </div>
+          </form>
+        </div>
+      </FadeIn>
+
+      {/* Info sidebar */}
+      <FadeIn client:load delay={0.1}>
+        <aside class="space-y-6 bg-subtle rounded-2xl p-7 lg:p-8 lg:sticky lg:top-24 self-start">
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="inline-grid place-items-center w-9 h-9 rounded-full bg-accent-soft text-accent" aria-hidden="true">
+                <Icon name="clock" size={18} />
+              </span>
+              <Text size="sm" weight="semibold" class="uppercase tracking-widest">Clinic hours</Text>
+            </div>
+            <ul class="space-y-2.5">
+              {hours.map((h) => (
+                <li class="flex justify-between items-baseline gap-4 text-base">
+                  <span class="text-fg font-medium">{h.day}</span>
+                  <span class="text-muted">{h.hours}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="h-px bg-border"></div>
+
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <span class="inline-grid place-items-center w-9 h-9 rounded-full bg-accent-soft text-accent shrink-0 mt-0.5" aria-hidden="true">
+                <Icon name="map-pin" size={18} />
+              </span>
+              <div>
+                <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest mb-1">Visit</Text>
+                <Text size="sm">{contact.address}</Text>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="inline-grid place-items-center w-9 h-9 rounded-full bg-accent-soft text-accent shrink-0 mt-0.5" aria-hidden="true">
+                <Icon name="phone" size={18} />
+              </span>
+              <div>
+                <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest mb-1">Call</Text>
+                <a
+                  href={`tel:${contact.phone.replace(/[^+\d]/g, '')}`}
+                  class="text-sm text-fg hover:text-accent transition-colors duration-fast ease-out-quint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
+                >
+                  {contact.phone}
+                </a>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="inline-grid place-items-center w-9 h-9 rounded-full bg-accent-soft text-accent shrink-0 mt-0.5" aria-hidden="true">
+                <Icon name="mail" size={18} />
+              </span>
+              <div>
+                <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest mb-1">Email</Text>
+                <a
+                  href={`mailto:${contact.email}`}
+                  class="text-sm text-fg hover:text-accent transition-colors duration-fast ease-out-quint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm break-all"
+                >
+                  {contact.email}
+                </a>
+              </div>
+            </li>
+          </ul>
+        </aside>
+      </FadeIn>
+    </div>
+  </Container>
+</Section>
