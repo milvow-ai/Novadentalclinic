@@ -52,8 +52,34 @@ const displaySizes = [
   { size: 'xl', label: 'xl — small heading' },
 ] as const;
 
-const bodySizes = ['lg', 'base', 'sm', 'xs'] as const;
-const bodyTones = ['default', 'muted', 'accent'] as const;
+const colorTokens = [
+  { name: '--color-bg', hex: '#FAFAF7', class: 'bg-bg', note: 'Primary background — warm off-white' },
+  { name: '--color-fg', hex: '#0F1419', class: 'bg-fg', note: 'Primary text — deep neutral' },
+  { name: '--color-muted', hex: '#6B7280', class: 'bg-muted', note: 'Secondary text, captions' },
+  { name: '--color-subtle', hex: '#F2F0EB', class: 'bg-subtle', note: 'Card surfaces, alt sections' },
+  { name: '--color-border', hex: '#E5E3DD', class: 'bg-border', note: 'Dividers, borders' },
+  { name: '--color-accent', hex: '#315BFF', class: 'bg-accent', note: 'CTAs, links, focus rings' },
+  { name: '--color-accent-fg', hex: '#FFFFFF', class: 'bg-accent-fg', note: 'Text on accent' },
+  { name: '--color-accent-soft', hex: '#E6EBFF', class: 'bg-accent-soft', note: 'Subtle accent surfaces' },
+  { name: '--color-dark', hex: '#0A1830', class: 'bg-dark', note: 'Deep navy section bg' },
+  { name: '--color-dark-fg', hex: '#FAFAF7', class: 'bg-dark-fg', note: 'Text on dark sections' },
+];
+
+const shadowTokens = [
+  { class: 'shadow-sm', label: 'shadow-sm', note: '0 1px 2px rgba(15,20,25,.04)' },
+  { class: 'shadow-md', label: 'shadow-md', note: '0 4px 12px rgba(15,20,25,.06)' },
+  { class: 'shadow-lg', label: 'shadow-lg', note: '0 8px 24px rgba(15,20,25,.08)' },
+  { class: 'shadow-glow', label: 'shadow-glow', note: '0 4px 20px rgba(49,91,255,.15)' },
+];
+
+const radiusTokens = [
+  { class: 'rounded-sm', label: 'rounded-sm', value: '8px' },
+  { class: 'rounded-md', label: 'rounded-md', value: '16px' },
+  { class: 'rounded-lg', label: 'rounded-lg', value: '24px' },
+  { class: 'rounded-xl', label: 'rounded-xl', value: '32px' },
+  { class: 'rounded-2xl', label: 'rounded-2xl', value: '40px' },
+  { class: 'rounded-full', label: 'rounded-full', value: 'pill / circle' },
+];
 ---
 
 <BaseLayout
@@ -82,6 +108,37 @@ const bodyTones = ['default', 'muted', 'accent'] as const;
   </Section>
 
   {/* ============================================================
+     0. COLOR TOKENS
+     ============================================================ */}
+  <Section tone="light" padding="default" aria-labelledby="sec-colors">
+    <Container>
+      <Heading id="sec-colors" as="h2" size="display-md" tone="accent" class="mb-3">
+        00 · Color tokens
+      </Heading>
+      <Text size="base" tone="muted" class="mb-12 max-w-2xl">
+        Ten CSS variables declared in <code class="font-mono text-fg">global.css</code>.
+        Every component color decision resolves back to these. Off-token colors are bugs (§4.1).
+      </Text>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        {colorTokens.map((c) => (
+          <div class="space-y-3">
+            <div
+              class:list={['aspect-[4/3] rounded-lg border border-border', c.class]}
+              aria-hidden="true"
+            ></div>
+            <div class="space-y-1">
+              <Text size="xs" weight="medium" class="font-mono">{c.name}</Text>
+              <Text size="xs" tone="muted" class="font-mono uppercase">{c.hex}</Text>
+              <Text size="xs" tone="muted">{c.note}</Text>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
      1. TYPOGRAPHY
      ============================================================ */}
   <Section tone="subtle" padding="default" aria-labelledby="sec-typography">
@@ -101,20 +158,38 @@ const bodyTones = ['default', 'muted', 'accent'] as const;
           ))}
         </div>
 
-        <div class="space-y-6 border-t border-border pt-10">
-          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">Body sizes × tones</Text>
-          {bodySizes.map((s) => (
-            <div class="space-y-2">
-              <Text size="xs" tone="muted" class="font-mono">size="{s}"</Text>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {bodyTones.map((t) => (
-                  <Text size={s} tone={t}>
-                    {t} — Modern dentistry, kept gentle. We care for whole families across the city.
-                  </Text>
-                ))}
-              </div>
-            </div>
-          ))}
+        <div class="space-y-8 border-t border-border pt-10">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">Body sizes — wrapping paragraphs (line-height visible)</Text>
+
+          <div class="space-y-2 max-w-2xl">
+            <Text size="xs" tone="muted" class="font-mono">size="lg"</Text>
+            <Text size="lg">
+              Nova Dental Studio is a family-run practice committed to gentle, modern, evidence-based care. Our team has spent fifteen years building real relationships with patients across the city — through routine cleanings, cosmetic work, and emergency visits — and that history shapes every decision we make at the chair.
+            </Text>
+          </div>
+
+          <div class="space-y-2 max-w-2xl">
+            <Text size="xs" tone="muted" class="font-mono">size="base"</Text>
+            <Text size="base">
+              Nova Dental Studio is a family-run practice committed to gentle, modern, evidence-based care. Our team has spent fifteen years building real relationships with patients across the city — through routine cleanings, cosmetic work, and emergency visits — and that history shapes every decision we make at the chair.
+            </Text>
+          </div>
+
+          <div class="space-y-2 max-w-2xl">
+            <Text size="xs" tone="muted" class="font-mono">size="sm"</Text>
+            <Text size="sm">
+              Nova Dental Studio is a family-run practice committed to gentle, modern, evidence-based care. Our team has spent fifteen years building real relationships with patients across the city — through routine cleanings, cosmetic work, and emergency visits — and that history shapes every decision we make at the chair.
+            </Text>
+          </div>
+        </div>
+
+        <div class="space-y-4 border-t border-border pt-10">
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">Tones (at size="base")</Text>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Text size="base" tone="default">Default — primary body color for narrative copy.</Text>
+            <Text size="base" tone="muted">Muted — secondary text, captions, helper copy.</Text>
+            <Text size="base" tone="accent">Accent — used sparingly for inline emphasis.</Text>
+          </div>
         </div>
 
         <div class="space-y-4 border-t border-border pt-10">
@@ -173,6 +248,28 @@ const bodyTones = ['default', 'muted', 'accent'] as const;
             </div>
           </div>
         ))}
+
+        <div class="space-y-4 pt-8 border-t border-border">
+          <Text size="sm" tone="muted" weight="medium" class="uppercase tracking-widest font-mono">
+            Focus states (forced via class)
+          </Text>
+          <Text size="sm" tone="muted" class="max-w-2xl">
+            Focus rings: accent color, 2px offset. In normal use these only appear under
+            <code class="font-mono text-fg">:focus-visible</code> (keyboard navigation,
+            programmatic focus). Forced here so they're auditable at a glance.
+          </Text>
+          <div class="flex flex-wrap items-center gap-4">
+            <Button variant="primary" size="md" class="ring-2 ring-accent ring-offset-2 ring-offset-bg">
+              Primary :focus-visible
+            </Button>
+            <Button variant="secondary" size="md" class="ring-2 ring-accent ring-offset-2 ring-offset-bg">
+              Secondary :focus-visible
+            </Button>
+            <Button variant="ghost" size="md" class="ring-2 ring-accent ring-offset-2 ring-offset-bg">
+              Ghost :focus-visible
+            </Button>
+          </div>
+        </div>
       </div>
     </Container>
   </Section>
@@ -373,7 +470,7 @@ const bodyTones = ['default', 'muted', 'accent'] as const;
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="space-y-3">
-          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">rounded="xl" (default)</Text>
+          <Text size="xs" tone="muted" weight="medium" class="uppercase tracking-widest">rounded-xl (default)</Text>
           <Image
             src="https://picsum.photos/seed/dental3/800/600"
             alt="Sample"
@@ -468,6 +565,66 @@ const bodyTones = ['default', 'muted', 'accent'] as const;
             ))}
           </Marquee>
         </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     9. SHADOW SCALE
+     ============================================================ */}
+  <Section tone="light" padding="default" aria-labelledby="sec-shadows">
+    <Container>
+      <Heading id="sec-shadows" as="h2" size="display-md" tone="accent" class="mb-3">
+        09 · Shadow scale
+      </Heading>
+      <Text size="base" tone="muted" class="mb-12 max-w-2xl">
+        Soft, diffused only (§4.5). No hard dark shadows. <code class="font-mono text-fg">shadow-glow</code> is reserved for primary CTAs and key floating elements.
+      </Text>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        {shadowTokens.map((s) => (
+          <div class="space-y-4">
+            <div
+              class:list={['aspect-square rounded-lg bg-bg border border-border', s.class]}
+              aria-hidden="true"
+            ></div>
+            <div class="space-y-1">
+              <Text size="xs" weight="medium" class="font-mono">{s.label}</Text>
+              <Text size="xs" tone="muted" class="font-mono">{s.note}</Text>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  {/* ============================================================
+     10. RADIUS SCALE
+     ============================================================ */}
+  <Section tone="subtle" padding="default" aria-labelledby="sec-radii">
+    <Container>
+      <Heading id="sec-radii" as="h2" size="display-md" tone="accent" class="mb-3">
+        10 · Radius scale
+      </Heading>
+      <Text size="base" tone="muted" class="mb-12 max-w-2xl">
+        Consistent, generous (§4.4). Buttons default to pill. Cards
+        <code class="font-mono text-fg">rounded-lg</code> minimum. Images
+        <code class="font-mono text-fg">rounded-xl</code> default.
+      </Text>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        {radiusTokens.map((r) => (
+          <div class="space-y-3">
+            <div
+              class:list={['aspect-square bg-accent', r.class]}
+              aria-hidden="true"
+            ></div>
+            <div class="space-y-1">
+              <Text size="xs" weight="medium" class="font-mono">{r.label}</Text>
+              <Text size="xs" tone="muted" class="font-mono">{r.value}</Text>
+            </div>
+          </div>
+        ))}
       </div>
     </Container>
   </Section>

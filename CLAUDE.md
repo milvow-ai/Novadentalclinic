@@ -196,11 +196,21 @@ The following 8 primitives MUST be built first in `/src/components/ui/`. Each mu
 ### 5.3 `<Card>`
 
 **Variants:** `default`, `feature`, `service`, `image-top`
-**States required:** default, hover (lift), interactive (clickable)
+**Modifiers:** `interactive` (boolean) — orthogonal to variant; any variant may be interactive. Passing `href` renders the card as an anchor and is interactive by default.
+**States required:** default, hover (lift, when interactive), focus-visible (when interactive)
 
-- Base: `bg-subtle` or `bg-bg`, `rounded-lg`, generous internal padding (24px–32px)
-- Hover (when interactive): `-translate-y-1`, `shadow-md → shadow-lg`, 300ms ease-out-quint
-- Image-top variant: image at top with `rounded-t-lg`, content below
+Implementation surface: 4 variants × 2 interactive states = 8 possible combos. The kitchen sink demonstrates 6 representative pairings:
+- `default` static
+- `default` interactive
+- `feature` interactive (linked)
+- `service` interactive
+- `image-top` interactive (linked)
+- `image-top` static
+
+Behavior:
+- Base: `bg-subtle`, `rounded-lg`, generous internal padding (24px–32px). `feature` upgrades to `rounded-xl`.
+- Hover (when interactive): `-translate-y-1`, `shadow-md → shadow-lg`, 300ms ease-out-quint.
+- Image-top variant: image at top via internal `<Image>` (with `rounded="none"` on the image so the card clip handles the radius); content block padded below.
 
 ### 5.4 `<Heading>`
 
