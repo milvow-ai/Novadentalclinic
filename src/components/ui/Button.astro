@@ -24,6 +24,8 @@ interface Props {
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
+  /** Switches secondary + ghost palettes for placement on bg-dark sections. */
+  onDark?: boolean;
   class?: string;
   id?: string;
   'aria-label'?: string;
@@ -39,6 +41,7 @@ const {
   disabled = false,
   loading = false,
   fullWidth = false,
+  onDark = false,
   class: className,
   ...rest
 } = Astro.props;
@@ -52,22 +55,37 @@ const base = [
   'aria-busy:cursor-wait',
 ].join(' ');
 
+// Per §6.11: every button hover MUST include a color shift in addition to
+// motion. Each variant below pairs a transform/shadow change with an explicit
+// bg/border color change. `onDark` swaps the secondary + ghost palettes.
 const variants: Record<Variant, string> = {
   primary: cn(
     'rounded-full bg-accent text-accent-fg shadow-glow',
-    'hover:-translate-y-0.5 hover:shadow-lg',
-    'active:translate-y-0 active:shadow-glow',
+    'hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-lg',
+    'active:translate-y-0 active:bg-accent-active active:shadow-glow',
   ),
-  secondary: cn(
-    'rounded-full bg-subtle text-fg',
-    'hover:-translate-y-0.5 hover:bg-border hover:shadow-md',
-    'active:translate-y-0 active:shadow-sm',
-  ),
-  ghost: cn(
-    'rounded-full bg-transparent text-fg border border-border',
-    'hover:-translate-y-0.5 hover:border-fg hover:bg-subtle',
-    'active:translate-y-0',
-  ),
+  secondary: onDark
+    ? cn(
+        'rounded-full bg-fg text-bg',
+        'hover:-translate-y-0.5 hover:bg-fg-hover hover:shadow-md',
+        'active:translate-y-0 active:bg-fg-active active:shadow-sm',
+      )
+    : cn(
+        'rounded-full bg-subtle text-fg',
+        'hover:-translate-y-0.5 hover:bg-border hover:shadow-md',
+        'active:translate-y-0 active:bg-border/70 active:shadow-sm',
+      ),
+  ghost: onDark
+    ? cn(
+        'rounded-full bg-transparent text-dark-fg border border-dark-fg/30',
+        'hover:-translate-y-0.5 hover:border-dark-fg hover:bg-dark-fg/10',
+        'active:translate-y-0 active:bg-dark-fg/20',
+      )
+    : cn(
+        'rounded-full bg-transparent text-fg border border-border',
+        'hover:-translate-y-0.5 hover:border-fg hover:bg-subtle',
+        'active:translate-y-0 active:bg-subtle/70',
+      ),
   link: cn(
     'rounded-sm bg-transparent text-fg px-0 py-0',
     'underline-offset-4 decoration-1',

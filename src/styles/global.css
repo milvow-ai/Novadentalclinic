@@ -46,10 +46,14 @@
      ---------------------------------------------------------- */
   --color-bg: #FAFAF7;
   --color-fg: #0F1419;
+  --color-fg-hover: #1A2230;
+  --color-fg-active: #2A3340;
   --color-muted: #6B7280;
   --color-subtle: #F2F0EB;
   --color-border: #E5E3DD;
   --color-accent: #315BFF;
+  --color-accent-hover: #2849D9;
+  --color-accent-active: #1F3CB8;
   --color-accent-fg: #FFFFFF;
   --color-accent-soft: #E6EBFF;
   --color-dark: #0A1830;

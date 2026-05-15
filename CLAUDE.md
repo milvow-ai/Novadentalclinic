@@ -64,16 +64,20 @@ Every color, size, spacing, radius, shadow, and motion timing is defined here. C
 Declared in `src/styles/global.css` under `:root`. All colors are CSS variables.
 
 ```
---color-bg:           #FAFAF7   /* warm off-white — primary background */
---color-fg:           #0F1419   /* deep neutral — primary text */
---color-muted:        #6B7280   /* secondary text, captions */
---color-subtle:       #F2F0EB   /* slightly darker than bg — card backgrounds */
---color-border:       #E5E3DD   /* light warm gray — dividers, borders */
---color-accent:       #315BFF   /* electric medical blue — CTAs, links, accents */
---color-accent-fg:    #FFFFFF   /* white text on blue */
---color-accent-soft:  #E6EBFF   /* very pale blue — subtle accent backgrounds */
---color-dark:         #0A1830   /* deep navy — dark section backgrounds */
---color-dark-fg:      #FAFAF7   /* off-white text on dark */
+--color-bg:             #FAFAF7   /* warm off-white — primary background */
+--color-fg:             #0F1419   /* deep neutral — primary text */
+--color-fg-hover:       #1A2230   /* secondary-on-dark hover — slight lighten of fg */
+--color-fg-active:      #2A3340   /* secondary-on-dark pressed state */
+--color-muted:          #6B7280   /* secondary text, captions */
+--color-subtle:         #F2F0EB   /* slightly darker than bg — card backgrounds */
+--color-border:         #E5E3DD   /* light warm gray — dividers, borders */
+--color-accent:         #315BFF   /* electric medical blue — CTAs, links, accents */
+--color-accent-hover:   #2849D9   /* primary CTA hover — ~15% darker accent */
+--color-accent-active:  #1F3CB8   /* primary CTA pressed — one shade darker again */
+--color-accent-fg:      #FFFFFF   /* white text on blue */
+--color-accent-soft:    #E6EBFF   /* very pale blue — subtle accent backgrounds */
+--color-dark:           #0A1830   /* deep navy — dark section backgrounds */
+--color-dark-fg:        #FAFAF7   /* off-white text on dark */
 ```
 
 **Rules:**
@@ -177,13 +181,18 @@ The following 8 primitives MUST be built first in `/src/components/ui/`. Each mu
 
 **Variants:** `primary`, `secondary`, `ghost`, `link`
 **Sizes:** `sm`, `md`, `lg`
+**Modifiers:** `onDark` (boolean) — swaps `secondary` + `ghost` palettes for placement on `bg-dark` sections.
 **States required:** default, hover, focus-visible, active, disabled, loading
 
-- Default shape: pill (`rounded-full`)
-- Primary: `bg-accent text-accent-fg`. On hover: subtle upward shift (`-translate-y-0.5`) + slight shadow grow. 200ms ease-out-quint.
-- Secondary: `bg-fg text-bg` for dark sections, or `bg-subtle text-fg` for light. Same motion.
-- Ghost: transparent background, border on hover.
-- Link: text-only button, underline appears on hover.
+**Color feedback is mandatory.** Every interactive button (primary, secondary, ghost) must provide visible color feedback on hover AND on active in addition to transform/shadow changes. Color-shift-only or motion-only hovers are bugs (see §6.11). `link` variant relies on its `text-fg → text-accent` color shift only — no transform.
+
+- Default shape: pill (`rounded-full`).
+- Primary: `bg-accent text-accent-fg shadow-glow`. Hover → `bg-accent-hover -translate-y-0.5 shadow-lg`. Active → `bg-accent-active translate-y-0`. 150ms duration-fast, ease-out-quint.
+- Secondary (light, default): `bg-subtle text-fg`. Hover → `bg-border -translate-y-0.5 shadow-md`. Active → `bg-border/70 translate-y-0`.
+- Secondary (`onDark`): `bg-fg text-bg`. Hover → `bg-fg-hover -translate-y-0.5 shadow-md`. Active → `bg-fg-active translate-y-0`.
+- Ghost (light, default): transparent + `border-border text-fg`. Hover → `bg-subtle border-fg -translate-y-0.5`. Active → `bg-subtle/70 translate-y-0`.
+- Ghost (`onDark`): transparent + `border-dark-fg/30 text-dark-fg`. Hover → `bg-dark-fg/10 border-dark-fg -translate-y-0.5`. Active → `bg-dark-fg/20 translate-y-0`.
+- Link: text-only. Default `text-fg`, hover → `text-accent` + underline.
 - All buttons must include focus-visible ring using `--color-accent` at 2px offset.
 
 ### 5.2 `<Link>` (anchor)
@@ -265,6 +274,7 @@ These define BEHAVIOR. They are not suggestions. Every interactive element must 
 8. **NEVER** apply hover utilities directly on raw HTML elements. Always go through primitives.
 9. **EVERY** primary CTA button has subtle `shadow-glow` to draw the eye. Secondary buttons do not.
 10. **EVERY** focusable element has visible focus-visible state. Accessibility is non-negotiable.
+11. **EVERY** button hover state MUST include a color shift in addition to motion. Color-shift-only or motion-only hovers are bugs. (Implemented via `--color-accent-hover` / `--color-accent-active` / `--color-fg-hover` / `--color-fg-active` tokens — see §4.1.)
 
 ---
 

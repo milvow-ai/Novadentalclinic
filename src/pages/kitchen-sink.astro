@@ -55,10 +55,14 @@ const displaySizes = [
 const colorTokens = [
   { name: '--color-bg', hex: '#FAFAF7', class: 'bg-bg', note: 'Primary background — warm off-white' },
   { name: '--color-fg', hex: '#0F1419', class: 'bg-fg', note: 'Primary text — deep neutral' },
+  { name: '--color-fg-hover', hex: '#1A2230', class: 'bg-fg-hover', note: 'Secondary-on-dark hover' },
+  { name: '--color-fg-active', hex: '#2A3340', class: 'bg-fg-active', note: 'Secondary-on-dark pressed' },
   { name: '--color-muted', hex: '#6B7280', class: 'bg-muted', note: 'Secondary text, captions' },
   { name: '--color-subtle', hex: '#F2F0EB', class: 'bg-subtle', note: 'Card surfaces, alt sections' },
   { name: '--color-border', hex: '#E5E3DD', class: 'bg-border', note: 'Dividers, borders' },
   { name: '--color-accent', hex: '#315BFF', class: 'bg-accent', note: 'CTAs, links, focus rings' },
+  { name: '--color-accent-hover', hex: '#2849D9', class: 'bg-accent-hover', note: 'Primary CTA hover (~15% darker)' },
+  { name: '--color-accent-active', hex: '#1F3CB8', class: 'bg-accent-active', note: 'Primary CTA pressed' },
   { name: '--color-accent-fg', hex: '#FFFFFF', class: 'bg-accent-fg', note: 'Text on accent' },
   { name: '--color-accent-soft', hex: '#E6EBFF', class: 'bg-accent-soft', note: 'Subtle accent surfaces' },
   { name: '--color-dark', hex: '#0A1830', class: 'bg-dark', note: 'Deep navy section bg' },
@@ -251,6 +255,39 @@ const radiusTokens = [
 
         <div class="space-y-4 pt-8 border-t border-border">
           <Text size="sm" tone="muted" weight="medium" class="uppercase tracking-widest font-mono">
+            Hover states (forced visible)
+          </Text>
+          <Text size="sm" tone="muted" class="max-w-2xl">
+            Hover behavior: <strong class="text-fg font-medium">color shift + transform + shadow</strong>.
+            Each variant pairs a bg/border color change with the -translate-y-0.5 lift.
+            Forced via class here so you can see all three side by side without chasing the cursor.
+          </Text>
+          <div class="flex flex-wrap items-center gap-4">
+            <Button variant="primary" size="md" class="bg-accent-hover -translate-y-0.5 shadow-lg">
+              Primary :hover
+            </Button>
+            <Button variant="secondary" size="md" class="bg-border -translate-y-0.5 shadow-md">
+              Secondary :hover
+            </Button>
+            <Button variant="ghost" size="md" class="bg-subtle border-fg -translate-y-0.5">
+              Ghost :hover
+            </Button>
+          </div>
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <Button variant="primary" size="md" class="bg-accent-active shadow-glow">
+              Primary :active
+            </Button>
+            <Button variant="secondary" size="md" class="bg-border/70 shadow-sm">
+              Secondary :active
+            </Button>
+            <Button variant="ghost" size="md" class="bg-subtle/70 border-fg">
+              Ghost :active
+            </Button>
+          </div>
+        </div>
+
+        <div class="space-y-4 pt-8 border-t border-border">
+          <Text size="sm" tone="muted" weight="medium" class="uppercase tracking-widest font-mono">
             Focus states (forced via class)
           </Text>
           <Text size="sm" tone="muted" class="max-w-2xl">
@@ -427,8 +464,11 @@ const radiusTokens = [
       </Text>
       <div class="mt-6 flex gap-4">
         <Button variant="primary" size="md">Primary on dark</Button>
-        <Button variant="ghost" size="md" class="text-dark-fg border-dark-fg/30 hover:border-dark-fg hover:bg-dark-fg/10">
+        <Button variant="ghost" size="md" onDark>
           Ghost on dark
+        </Button>
+        <Button variant="secondary" size="md" onDark>
+          Secondary on dark
         </Button>
       </div>
     </Container>
